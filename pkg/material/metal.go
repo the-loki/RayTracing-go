@@ -1,9 +1,8 @@
 package material
 
 import (
-	"cmd/ray-tracing/main.go/pkg/hittable"
-	mathplus "cmd/ray-tracing/main.go/pkg/math-plus"
-	"cmd/ray-tracing/main.go/pkg/ray"
+	"github.com/404Polaris/RayTracing-go/pkg/geometry"
+	mathplus "github.com/404Polaris/RayTracing-go/pkg/mathplus"
 )
 
 type Metal struct {
@@ -12,13 +11,14 @@ type Metal struct {
 }
 
 func NewMetal(fuzz float64, albedo mathplus.Vector3) *Metal {
+	fuzz = mathplus.Clamp(fuzz, fuzz, 1)
 	return &Metal{fuzz: fuzz, albedo: albedo}
 }
 
-func (m Metal) scatter(inRay *ray.Ray, hitRecord *hittable.HitRecord, attenuation *mathplus.Vector3, scatteredRay *ray.Ray) bool {
-	reflectDirection := mathplus.Reflect(inRay.Direction().Normalize(), hitRecord.Normal)
-	scatteredRay = ray.NewRay(hitRecord.Point, reflectDirection.Add(mathplus.RandomUnitVector3()).Mul(m.fuzz).Normalize())
-	attenuation = &m.albedo
+func (m *Metal) Scatter(inRay *mathplus.Ray, hitInfo geometry.HitInfo, attenuation *mathplus.Vector3, scatteredRay *mathplus.Ray) bool {
+	reflectDirection := mathplus.Reflect(inRay.Direction().Normalize(), hitInfo.Normal)
+	*scatteredRay = *mathplus.NewRay(hitInfo.Point, reflectDirection.Add((mathplus.RandomUnitVector3()).Normalize().Mul(m.fuzz)))
+	*attenuation = m.albedo
 
-	return scatteredRay.Direction().Dot(hitRecord.Normal) > 0
+	return scatteredRay.Direction().Dot(hitInfo.Normal) > 0
 }

@@ -1,4 +1,4 @@
-package math_plus
+package mathplus
 
 import "math"
 
@@ -15,7 +15,7 @@ func Clamp(value float64, min float64, max float64) float64 {
 }
 
 func Reflect(in Vector3, n Vector3) Vector3 {
-	return in.Sub(n.Mul(2 * in.Dot(n)))
+	return in.Sub(n.Mul(in.Dot(n) * 2))
 }
 
 func Refract(in Vector3, n Vector3, e float64) Vector3 {

@@ -1,34 +1,40 @@
 package scene
 
 import (
-	"cmd/ray-tracing/main.go/pkg/hittable"
-	"cmd/ray-tracing/main.go/pkg/ray"
+	"github.com/404Polaris/RayTracing-go/pkg/geometry"
+	"github.com/404Polaris/RayTracing-go/pkg/mathplus"
 )
 
 type Scene struct {
-	objects []*hittable.Hittable
+	objects []geometry.Hittable
 }
 
-func (s Scene) Hit(ray *ray.Ray, dMin float64, dMax float64, hitRecord *hittable.HitRecord) bool {
+func NewScene() *Scene {
+	scene := &Scene{}
+	scene.objects = make([]geometry.Hittable, 0)
+	return scene
+}
+
+func (s *Scene) Hit(ray *mathplus.Ray, dMin float64, dMax float64, hitInfo *geometry.HitInfo) bool {
 	hitAnything := false
 	closetDistMax := dMax
-	record := hittable.HitRecord{}
+	localHitInfo := geometry.HitInfo{}
 
 	for _, o := range s.objects {
-		if (*o).Hit(ray, dMin, closetDistMax, &record) {
+		if o.Hit(ray, dMin, closetDistMax, &localHitInfo) {
 			hitAnything = true
-			hitRecord = &record
-			closetDistMax = record.Distance
+			*hitInfo = localHitInfo
+			closetDistMax = localHitInfo.Distance
 		}
 	}
 
 	return hitAnything
 }
 
-func (s Scene) Clear() {
-	s.objects = []*hittable.Hittable{}
+func (s *Scene) Clear() {
+	s.objects = []geometry.Hittable{}
 }
 
-func (s Scene) Add(object *hittable.Hittable) {
+func (s *Scene) Add(object geometry.Hittable) {
 	s.objects = append(s.objects, object)
 }

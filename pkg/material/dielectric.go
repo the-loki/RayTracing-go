@@ -1,9 +1,8 @@
 package material
 
 import (
-	"cmd/ray-tracing/main.go/pkg/hittable"
-	mathplus "cmd/ray-tracing/main.go/pkg/math-plus"
-	"cmd/ray-tracing/main.go/pkg/ray"
+	"github.com/404Polaris/RayTracing-go/pkg/geometry"
+	mathplus "github.com/404Polaris/RayTracing-go/pkg/mathplus"
 	"math"
 	"math/rand"
 )
@@ -16,8 +15,8 @@ func NewDielectric(refIdx float64) *Dielectric {
 	return &Dielectric{refIdx: refIdx}
 }
 
-func (d Dielectric) scatter(inRay *ray.Ray, hitRecord *hittable.HitRecord, attenuation *mathplus.Vector3, scatteredRay *ray.Ray) bool {
-	attenuation = mathplus.NewVector3(1, 1, 1)
+func (d *Dielectric) Scatter(inRay *mathplus.Ray, hitRecord geometry.HitInfo, attenuation *mathplus.Vector3, scatteredRay *mathplus.Ray) bool {
+	*attenuation = *mathplus.NewVector3(1, 1, 1)
 	directionNormalized := inRay.Direction().Normalize()
 	cosTheta := math.Min(directionNormalized.Mul(-1).Dot(hitRecord.Normal), 1.0)
 	sinTheta := math.Sqrt(1.0 - cosTheta*cosTheta)
@@ -29,18 +28,18 @@ func (d Dielectric) scatter(inRay *ray.Ray, hitRecord *hittable.HitRecord, atten
 
 	if e*sinTheta > 1.0 {
 		reflected := mathplus.Reflect(directionNormalized, hitRecord.Normal)
-		scatteredRay = ray.NewRay(hitRecord.Point, reflected)
+		*scatteredRay = *mathplus.NewRay(hitRecord.Point, reflected)
 		return true
 	}
 
 	reflectProb := mathplus.Schlick(cosTheta, e)
 	if rand.Float64() < reflectProb {
 		reflected := mathplus.Reflect(directionNormalized, hitRecord.Normal)
-		scatteredRay = ray.NewRay(hitRecord.Point, reflected)
+		*scatteredRay = *mathplus.NewRay(hitRecord.Point, reflected)
 		return true
 	}
 
 	directionRefracted := mathplus.Refract(directionNormalized, hitRecord.Normal, e)
-	scatteredRay = ray.NewRay(hitRecord.Point, directionRefracted)
+	*scatteredRay = *mathplus.NewRay(hitRecord.Point, directionRefracted)
 	return true
 }

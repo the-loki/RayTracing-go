@@ -1,11 +1,10 @@
 package material
 
 import (
-	"cmd/ray-tracing/main.go/pkg/hittable"
-	mathplus "cmd/ray-tracing/main.go/pkg/math-plus"
-	"cmd/ray-tracing/main.go/pkg/ray"
+	"github.com/404Polaris/RayTracing-go/pkg/geometry"
+	mathplus "github.com/404Polaris/RayTracing-go/pkg/mathplus"
 )
 
 type Material interface {
-	scatter(inRay *ray.Ray, hitRecord *hittable.HitRecord, attenuation *mathplus.Vector3, scatteredRay *ray.Ray) bool
+	Scatter(inRay *mathplus.Ray, hitRecord geometry.HitInfo, attenuation *mathplus.Vector3, scatteredRay *mathplus.Ray) bool
 }

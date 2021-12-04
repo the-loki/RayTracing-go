@@ -1,4 +1,4 @@
-package math_plus
+package mathplus
 
 import "math"
 

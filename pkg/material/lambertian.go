@@ -1,18 +1,21 @@
 package material
 
 import (
-	"cmd/ray-tracing/main.go/pkg/hittable"
-	mathplus "cmd/ray-tracing/main.go/pkg/math-plus"
-	"cmd/ray-tracing/main.go/pkg/ray"
+	"github.com/404Polaris/RayTracing-go/pkg/geometry"
+	mathplus "github.com/404Polaris/RayTracing-go/pkg/mathplus"
 )
 
 type Lambertian struct {
 	albedo mathplus.Vector3
 }
 
-func (l Lambertian) scatter(inRay *ray.Ray, hitRecord *hittable.HitRecord, attenuation *mathplus.Vector3, scatteredRay *ray.Ray) bool {
+func NewLambertian(albedo mathplus.Vector3) *Lambertian {
+	return &Lambertian{albedo: albedo}
+}
+
+func (l *Lambertian) Scatter(inRay *mathplus.Ray, hitRecord geometry.HitInfo, attenuation *mathplus.Vector3, scatteredRay *mathplus.Ray) bool {
 	scatterDirection := hitRecord.Normal.Add(mathplus.RandomUnitVector3())
-	scatteredRay = ray.NewRay(hitRecord.Point, scatterDirection.Normalize())
-	attenuation = &l.albedo
+	*scatteredRay = *mathplus.NewRay(hitRecord.Point, scatterDirection.Normalize())
+	*attenuation = l.albedo
 	return true
 }
